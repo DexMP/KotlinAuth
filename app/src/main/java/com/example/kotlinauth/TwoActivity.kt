@@ -22,7 +22,7 @@ class TwoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_two)
 
         val sharedPreferences = getSharedPreferences(USER_DATA, Context.MODE_PRIVATE)
-        result.text = "token: " + sharedPreferences.getString("token", "lost") + "\nusername: " +  sharedPreferences.getString("username", "lost")
+        result.text = "token: " + sharedPreferences.getString("token", "lost") + "\n\nusername: " +  sharedPreferences.getString("username", "lost")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -34,42 +34,45 @@ class TwoActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle presses on the action bar menu items
+        val sharedPreferences = getSharedPreferences(USER_DATA, Context.MODE_PRIVATE)
         when (item.itemId) {
             R.id.exit -> {
-                exit()
+                val formBody = FormBody.Builder()
+                    .add("username", sharedPreferences.getString("username", "").toString())
+                    .build()
+                val request = Request.Builder()
+                    .url("https://apiscud.areas.su/logout")
+                    .post(formBody)
+                    .build()
+                if (request.isHttps){
+                    val dialogBuilder = AlertDialog.Builder(this)
+                    val inflater = this.layoutInflater
+                    val dialogView = inflater.inflate(R.layout.custom_dialog, null)
+                    dialogBuilder.setView(dialogView)
+
+                    dialogBuilder.setTitle("Выход")
+                    dialogBuilder.setMessage("Вы уверены что хотите выйти?")
+                    dialogBuilder.setNeutralButton("Нет") { dialog, whichButton ->
+
+                    }
+                    dialogBuilder.setPositiveButton("Да") { dialog, whichButton ->
+
+                        val sharedPreferences = getSharedPreferences(USER_DATA, Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("token", "")
+                        editor.putString("username", "")
+                        editor.apply()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+
+                    val b = dialogBuilder.create()
+                    b.show()
+                }
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun exit(){
-        val formBody = FormBody.Builder()
-            .add("username", username.text.toString())
-            .build()
-        val request = Request.Builder()
-            .url("https://apiscud.areas.su/logout")
-            .post(formBody)
-            .build()
-        if (request.isHttps){
-            val dialogBuilder = AlertDialog.Builder(this)
-            val inflater = this.layoutInflater
-            val dialogView = inflater.inflate(R.layout.custom_dialog, null)
-            dialogBuilder.setView(dialogView)
-
-            dialogBuilder.setTitle("Выход")
-            dialogBuilder.setMessage("Вы уверены что хотите выйти?")
-            dialogBuilder.setNeutralButton("Нет") { dialog, whichButton ->
-
-            }
-            dialogBuilder.setPositiveButton("Да") { dialog, whichButton ->
-                val intent = Intent(this, TwoActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-
-            val b = dialogBuilder.create()
-            b.show()
-        }
     }
 }

@@ -2,10 +2,8 @@ package com.example.kotlinauth
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.preference.PreferenceManager
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.FormBody
@@ -42,10 +40,11 @@ class MainActivity : AppCompatActivity() {
                     dialogBuilder.setView(dialogView)
 
                     dialogBuilder.setTitle("Добро пожаловать!")
-                    dialogBuilder.setMessage("Ваш токен: $response")
+                    dialogBuilder.setMessage("Ваш токен: " + response)
                     dialogBuilder.setPositiveButton("Ок") { dialog, whichButton ->
                         val intent = Intent(this, TwoActivity::class.java)
                         startActivity(intent)
+                        finish()
                     }
                     val b = dialogBuilder.create()
                     b.show()
@@ -57,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
                     dialogBuilder.setTitle("Вход не удался")
                     dialogBuilder.setMessage("Что-то пошло не так (( \n Попробуйте снова!")
-                    dialogBuilder.setPositiveButton("Ладно") { dialog, whichButton ->
+                    dialogBuilder.setPositiveButton("Ok") { dialog, whichButton ->
 
                     }
                     val b = dialogBuilder.create()
